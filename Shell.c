@@ -2,7 +2,7 @@
 #include "Shell.h"
 #include <ctype.h>
 
-int top = 0;
+int numVariables = 0;
 
 void removeDoubleqQuotes(char *value);
 void shiftInput(char input[]);
@@ -59,6 +59,7 @@ void getInput(char input[])
     input[strlen(input) - 1] = '\0';
 }
 
+/* Count the number of arguments to initialize an array of args. */
 int countArgs(char input[])
 {
     int countSpaces = 0;
@@ -84,6 +85,7 @@ int containsExpression(char input[])
     return 0;
 }
 
+/* Replace expression with its stored value. */
 void replaceExpression(char input[])
 {
     char temp[MAX_INPUT];
@@ -110,7 +112,7 @@ void replaceExpression(char input[])
     name[k] = '\0';
 
     // Search Variable
-    for (k = 0; k < MAX_VARIABLES && k < top; k++)
+    for (k = 0; k < MAX_VARIABLES && k < numVariables; k++)
     {
         if (strcmp(name, variables.names[k]) == 0)
         {
@@ -149,11 +151,11 @@ int export(char input[])
         removeDoubleqQuotes(value);
         for (int i = 0; i < MAX_VARIABLES; i++)
         {
-            if (i == top)
+            if (i == numVariables)
             {
                 strcpy(variables.names[i], name);
                 strcpy(variables.values[i], value);
-                top++;
+                numVariables++;
                 break;
             }
             else if (strcmp(name, variables.names[i]) == 0)
@@ -214,6 +216,7 @@ int cd(char input[])
     return 0;
 }
 
+/* Parse input into a command and an array of args. */
 void parseInput(char input[], char **command, char *args[])
 {
     char *token = strtok(input, " ");
